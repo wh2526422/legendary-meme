@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -32,6 +33,8 @@ public class LinearTest1 extends Activity {
     private boolean test3;
     private boolean test4;
     private boolean test5;
+    private boolean test6;
+    float  oldDist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,9 @@ public class LinearTest1 extends Activity {
         List<Circle> circles;
         List<Point> points;
         List<Line> shortLines;
+        int flag;
+
+
 
         public CanvasView(Context context) {
             super(context);
@@ -204,6 +210,13 @@ public class LinearTest1 extends Activity {
                 }
 
                 drawLinesFree(canvas);
+            } else if (!test6) {
+                for (int i = 0; i < circles.size(); i++) {
+                    Circle circle = circles.get(i);
+                    circlePaint.setColor(circle.color);
+                    canvas.drawCircle(circle.cx,circle.cy,circle.radios,circlePaint);
+                }
+
             }
 
         }
@@ -228,27 +241,41 @@ public class LinearTest1 extends Activity {
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
-            int downX;
-            int downY;
+            int downX = 0;
+            int downY = 0;
             int x = (int) event.getX();
             int y = (int) event.getY();
-            switch (event.getAction()) {
+            switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
                 case MotionEvent.ACTION_DOWN:
+                    downX = (int) event.getX();
+                    downY = (int) event.getY();
                     if (test2 && !test3) {
-                        downX = (int) event.getX();
-                        downY = (int) event.getY();
                         changeCircleColor(downX, downY, circles);
                     }
                     break;
-
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    oldDist = distance(event);
+                    if (oldDist > 10f) {
+                        flag = 1;
+                    }
+                        break;
                 case MotionEvent.ACTION_MOVE:
                     line.add(new Point(x, y));
                     if (test4 && !test5) {
                         changeLineColor(x,y,shortLines);
-                    }
-                    break;
+                    } else if (test5 & !test6) {
 
+                        if (flag == 1) {
+                            float newDist = distance(event);
+                            Log.i("wanghuan","newDist\t" + newDist);
+                            changeCircleColorAndRadios(oldDist,newDist,circles);
+
+                        }
+
+                    }
+
+                    break;
                 case MotionEvent.ACTION_UP:
                     lines.add(line);
 
@@ -271,6 +298,7 @@ public class LinearTest1 extends Activity {
                         test3 = ifTest3Success(circles);
                         if (test3) {
                             Toast.makeText(LinearTest1.this, "测试成功", Toast.LENGTH_SHORT).show();
+                            circles.clear();
                             lines.clear();
                         }
                     } else if (!test4) {
@@ -282,18 +310,43 @@ public class LinearTest1 extends Activity {
                             Toast.makeText(LinearTest1.this, "测试失败", Toast.LENGTH_SHORT).show();
                         }
                     } else if (!test5) {
-                        Log.i("wanghuan","test5");
                         test5 = ifTest5Success(shortLines);
                         if (test5) {
                             Toast.makeText(LinearTest1.this, "测试成功", Toast.LENGTH_SHORT).show();
                             lines.clear();
+                            circles = readTest6Cicles();
                         }
+                    } else if (!test6) {
+
+
                     }
                     line = new ArrayList<>();
                     break;
             }
             invalidate();
             return true;
+        }
+
+        private void changeCircleColorAndRadios(float oldDist,float newDist, List<Circle> circles) {
+            Log.i("wanghuan","oldDist\t" + oldDist + "\tnewDist\t" + newDist) ;
+            for (int i = 0 ; i < circles.size(); i ++) {
+                Circle circle = circles.get(i);
+                if (i == 2) {
+                    circle.radios = newDist/oldDist * circle.radios;
+                }
+            }
+        }
+
+        private List<Circle> readTest6Cicles() {
+            List<Circle> circles = new ArrayList<>();
+            Circle c1 = new Circle(mRectWidth/2,mRectHeight/2,Math.min(mRectWidth/2,mRectHeight/2));
+            Circle c2 = new Circle(mRectWidth/2,mRectHeight/2,Math.min(mRectWidth/8,mRectHeight/8));
+            Circle c3 = new Circle(mRectWidth/2,mRectHeight/2,Math.min(mRectWidth/4,mRectHeight/3));
+            c3.color = Color.GREEN;
+            circles.add(c1);
+            circles.add(c2);
+            circles.add(c3);
+            return circles;
         }
 
         /**
@@ -494,14 +547,20 @@ public class LinearTest1 extends Activity {
             for (int i = 0; i < lines.size() ; i ++) {
                 Line line = lines.get(i);
                 if (line.color == Color.BLUE) {
-                    Log.i("wanghuan","i\t" + i + "\tline\t" + line.color);
                     return false;
                 }
             }
             return true;
         }
 
+        private float distance(MotionEvent event) {
+            float x=event.getX(0)-event.getX(1);
+            float y=event.getY(0)-event.getY(1);
+            return (float) Math.sqrt(x*x+y*y);
+        }
+
     }
+
 
     class Circle {
         int cx;
@@ -515,7 +574,7 @@ public class LinearTest1 extends Activity {
             this.radios = radios;
         }
     }
-    
+
     class Line{
         float startx;
         float starty;
