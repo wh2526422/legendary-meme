@@ -34,7 +34,7 @@ public class LinearTest1 extends Activity {
     private boolean test4;
     private boolean test5;
     private boolean test6;
-    float  oldDist;
+    float oldDist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,6 @@ public class LinearTest1 extends Activity {
         List<Point> points;
         List<Line> shortLines;
         int flag;
-
 
 
         public CanvasView(Context context) {
@@ -99,10 +98,10 @@ public class LinearTest1 extends Activity {
         private List<Line> rendLines() {
             List<Line> lines = new ArrayList<>();
 
-            Line l1 = new Line(0,mRectHeight/2,padding,mRectHeight/2);
-            Line l2 = new Line(mRectWidth/2,mRectHeight - padding,mRectWidth/2,mRectHeight);
-            Line l3 = new Line(mRectWidth - padding,mRectHeight/2,mRectWidth,mRectHeight/2);
-            Line l4 = new Line(mRectWidth/2,0,mRectWidth/2,padding);
+            Line l1 = new Line(0, mRectHeight / 2, padding, mRectHeight / 2);
+            Line l2 = new Line(mRectWidth / 2, mRectHeight - padding, mRectWidth / 2, mRectHeight);
+            Line l3 = new Line(mRectWidth - padding, mRectHeight / 2, mRectWidth, mRectHeight / 2);
+            Line l4 = new Line(mRectWidth / 2, 0, mRectWidth / 2, padding);
 
             lines.add(l1);
             lines.add(l2);
@@ -203,10 +202,10 @@ public class LinearTest1 extends Activity {
 
                 drawLinesFree(canvas);
             } else if (!test5) {
-                for (int i =0; i < shortLines.size();i ++) {
+                for (int i = 0; i < shortLines.size(); i++) {
                     Line line = shortLines.get(i);
                     mLinePaint.setColor(line.color);
-                    canvas.drawLine(line.startx,line.starty,line.stopx,line.stopy,mLinePaint);
+                    canvas.drawLine(line.startx, line.starty, line.stopx, line.stopy, mLinePaint);
                 }
 
                 drawLinesFree(canvas);
@@ -214,7 +213,7 @@ public class LinearTest1 extends Activity {
                 for (int i = 0; i < circles.size(); i++) {
                     Circle circle = circles.get(i);
                     circlePaint.setColor(circle.color);
-                    canvas.drawCircle(circle.cx,circle.cy,circle.radios,circlePaint);
+                    canvas.drawCircle(circle.cx, circle.cy, circle.radios, circlePaint);
                 }
 
             }
@@ -223,6 +222,7 @@ public class LinearTest1 extends Activity {
 
         /**
          * 自由划线
+         *
          * @param canvas
          */
         private void drawLinesFree(Canvas canvas) {
@@ -259,29 +259,24 @@ public class LinearTest1 extends Activity {
                     if (oldDist > 10f) {
                         flag = 1;
                     }
-                        break;
+                    break;
                 case MotionEvent.ACTION_MOVE:
                     line.add(new Point(x, y));
                     if (test4 && !test5) {
-                        changeLineColor(x,y,shortLines);
+                        changeLineColor(x, y, shortLines);
                     } else if (test5 & !test6) {
-
                         if (flag == 1) {
                             float newDist = distance(event);
-                            Log.i("wanghuan","newDist\t" + newDist);
-                            changeCircleColorAndRadios(oldDist,newDist,circles);
+                            changeCircleColorAndRadios(oldDist, newDist, circles);
 
                         }
-
                     }
 
                     break;
                 case MotionEvent.ACTION_UP:
                     lines.add(line);
-
                     if (!test1) {
                         test1 = ifTest1Success(line);
-
                         if (!test1) {
                             Toast.makeText(LinearTest1.this, "测试失败", Toast.LENGTH_SHORT).show();
                         } else {
@@ -317,7 +312,7 @@ public class LinearTest1 extends Activity {
                             circles = readTest6Cicles();
                         }
                     } else if (!test6) {
-
+                        flag = 0;
 
                     }
                     line = new ArrayList<>();
@@ -327,21 +322,25 @@ public class LinearTest1 extends Activity {
             return true;
         }
 
-        private void changeCircleColorAndRadios(float oldDist,float newDist, List<Circle> circles) {
-            Log.i("wanghuan","oldDist\t" + oldDist + "\tnewDist\t" + newDist) ;
-            for (int i = 0 ; i < circles.size(); i ++) {
-                Circle circle = circles.get(i);
-                if (i == 2) {
-                    circle.radios = newDist/oldDist * circle.radios;
-                }
+        private void changeCircleColorAndRadios(float oldDist, float newDist, List<Circle> circles) {
+            Circle circle = circles.get(2);
+            circle.radios = newDist / oldDist * circle.radios;
+
+            if (circle.radios >= circles.get(0).radios) {
+                circle.radios = circles.get(0).radios;
             }
+
+            if (circle.radios <= circles.get(1).radios) {
+                circle.radios = circles.get(1).radios;
+            }
+
         }
 
         private List<Circle> readTest6Cicles() {
             List<Circle> circles = new ArrayList<>();
-            Circle c1 = new Circle(mRectWidth/2,mRectHeight/2,Math.min(mRectWidth/2,mRectHeight/2));
-            Circle c2 = new Circle(mRectWidth/2,mRectHeight/2,Math.min(mRectWidth/8,mRectHeight/8));
-            Circle c3 = new Circle(mRectWidth/2,mRectHeight/2,Math.min(mRectWidth/4,mRectHeight/3));
+            Circle c1 = new Circle(mRectWidth / 2, mRectHeight / 2, Math.min(mRectWidth / 2, mRectHeight / 2));
+            Circle c2 = new Circle(mRectWidth / 2, mRectHeight / 2, Math.min(mRectWidth / 8, mRectHeight / 8));
+            Circle c3 = new Circle(mRectWidth / 2, mRectHeight / 2, Math.min(mRectWidth / 4, mRectHeight / 3));
             c3.color = Color.GREEN;
             circles.add(c1);
             circles.add(c2);
@@ -473,8 +472,8 @@ public class LinearTest1 extends Activity {
             }
         }
 
-        private void changeLineColor(int x, int y, List<Line> lines){
-            for (int i = 0; i < lines.size(); i ++) {
+        private void changeLineColor(int x, int y, List<Line> lines) {
+            for (int i = 0; i < lines.size(); i++) {
                 Line line = lines.get(i);
                 if (x > line.startx - 10 && x < line.stopx + 10 && y > line.starty - 10 && y < line.stopy + 10) {
                     line.color = Color.GREEN;
@@ -495,7 +494,7 @@ public class LinearTest1 extends Activity {
                     return false;
                 }
 
-                if (point.x > padding -10 && point.x < padding + 10 && point.y >= padding) {
+                if (point.x > padding - 10 && point.x < padding + 10 && point.y >= padding) {
                     return false;
                 }
 
@@ -503,11 +502,11 @@ public class LinearTest1 extends Activity {
                     return false;
                 }
 
-                if (point.x > mRectWidth - padding -10 && point.x < mRectWidth - padding + 10 &&point.y >= padding && point.y <= mRectHeight - padding) {
+                if (point.x > mRectWidth - padding - 10 && point.x < mRectWidth - padding + 10 && point.y >= padding && point.y <= mRectHeight - padding) {
                     return false;
                 }
 
-                if (point.y > mRectHeight - padding -10 && point.y < mRectHeight - padding +10 && point.x >= padding * 2 && point.x <= mRectWidth - padding) {
+                if (point.y > mRectHeight - padding - 10 && point.y < mRectHeight - padding + 10 && point.x >= padding * 2 && point.x <= mRectWidth - padding) {
                     return false;
                 }
 
@@ -515,7 +514,7 @@ public class LinearTest1 extends Activity {
                     return false;
                 }
 
-                if (point.y > padding * 2 -10 && point.y < padding * 2 + 10 && point.x >= padding * 2 && point.x <= mRectWidth - padding * 2) {
+                if (point.y > padding * 2 - 10 && point.y < padding * 2 + 10 && point.x >= padding * 2 && point.x <= mRectWidth - padding * 2) {
                     return false;
                 }
 
@@ -527,7 +526,7 @@ public class LinearTest1 extends Activity {
                     return false;
                 }
 
-                if (point.x > padding * 3 -10 && point.x < padding * 3 + 10 && point.y >= padding * 3 && point.y <= mRectHeight - padding * 2) {
+                if (point.x > padding * 3 - 10 && point.x < padding * 3 + 10 && point.y >= padding * 3 && point.y <= mRectHeight - padding * 2) {
                     return false;
                 }
 
@@ -540,11 +539,12 @@ public class LinearTest1 extends Activity {
 
         /**
          * 判断测试5是否成功
+         *
          * @param lines
          * @return
          */
         private boolean ifTest5Success(List<Line> lines) {
-            for (int i = 0; i < lines.size() ; i ++) {
+            for (int i = 0; i < lines.size(); i++) {
                 Line line = lines.get(i);
                 if (line.color == Color.BLUE) {
                     return false;
@@ -554,9 +554,14 @@ public class LinearTest1 extends Activity {
         }
 
         private float distance(MotionEvent event) {
-            float x=event.getX(0)-event.getX(1);
-            float y=event.getY(0)-event.getY(1);
-            return (float) Math.sqrt(x*x+y*y);
+            float x = 0;
+            float y = 0;
+            if (event.getPointerCount() > 1) {
+                x = event.getX(0) - event.getX(1);
+                y = event.getY(0) - event.getY(1);
+            }
+
+            return (float) Math.sqrt(x * x + y * y);
         }
 
     }
@@ -575,7 +580,7 @@ public class LinearTest1 extends Activity {
         }
     }
 
-    class Line{
+    class Line {
         float startx;
         float starty;
         float stopx;
