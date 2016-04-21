@@ -281,6 +281,13 @@ public class LinearTest1 extends Activity {
                         } else {
                             Toast.makeText(LinearTest1.this, "测试失败", Toast.LENGTH_SHORT).show();
                         }
+                    } else if (!test5) {
+                        Log.i("wanghuan","test5");
+                        test5 = ifTest5Success(shortLines);
+                        if (test5) {
+                            Toast.makeText(LinearTest1.this, "测试成功", Toast.LENGTH_SHORT).show();
+                            lines.clear();
+                        }
                     }
                     line = new ArrayList<>();
                     break;
@@ -414,11 +421,9 @@ public class LinearTest1 extends Activity {
         }
 
         private void changeLineColor(int x, int y, List<Line> lines){
-            Log.i("wanghuan","changeLineColor\tx" + x + "\ty\t" + y);
             for (int i = 0; i < lines.size(); i ++) {
                 Line line = lines.get(i);
                 if (x > line.startx - 10 && x < line.stopx + 10 && y > line.starty - 10 && y < line.stopy + 10) {
-                    Log.i("wanghuan","if");
                     line.color = Color.GREEN;
                 }
             }
@@ -433,7 +438,6 @@ public class LinearTest1 extends Activity {
         private boolean ifTest4Success(List<Point> points) {
             for (int i = 0; i < points.size(); i++) {
                 Point point = points.get(i);
-                Log.i("wanghuan","x\t" + point.x + "\ty\t" + point.y);
                 if (i == 0 && (point.x >= padding || point.y <= mRectHeight - padding)) {
                     return false;
                 }
@@ -475,6 +479,22 @@ public class LinearTest1 extends Activity {
                 }
 
                 if (i == points.size() - 1 && (point.x < padding * 3 || point.x > padding * 4 || point.y > mRectHeight - padding * 2 || point.y < mRectHeight - padding * 3)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /**
+         * 判断测试5是否成功
+         * @param lines
+         * @return
+         */
+        private boolean ifTest5Success(List<Line> lines) {
+            for (int i = 0; i < lines.size() ; i ++) {
+                Line line = lines.get(i);
+                if (line.color == Color.BLUE) {
+                    Log.i("wanghuan","i\t" + i + "\tline\t" + line.color);
                     return false;
                 }
             }
