@@ -7,10 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -357,7 +355,7 @@ public class LinearTest1 extends Activity {
         private boolean ifTest1Success(List<Point> points) {
             int centerX;
             int centerY;
-            Point firtsPo = null;
+            Point firstPo = null;
             for (int i = 0; i < points.size(); i++) {
                 Point point = points.get(i);
                 int x = point.x;
@@ -366,7 +364,7 @@ public class LinearTest1 extends Activity {
                 centerX = centerY * mRectWidth / mRectHeight;
 
                 if (i == 0) {
-                    firtsPo = point;
+                    firstPo = point;
                 }
                 //  判断第一个点的位置是否在两侧对角
                 if (i == 0 && (x > padding || y > padding)) {
@@ -380,13 +378,13 @@ public class LinearTest1 extends Activity {
                 }
                 //  判断终点是否在两侧对角
                 if (i == points.size() - 1 && (x < mRectWidth - padding || y < mRectHeight - padding)) {
-                    if (!(x < padding && y < padding && firtsPo.x > mRectWidth - padding && firtsPo.y > mRectHeight - padding)) {
+                    if (!(x < padding && y < padding && firstPo.x > mRectWidth - padding && firstPo.y > mRectHeight - padding)) {
                         return false;
                     }
                 }
                 //  补漏判断起点终点是否在一个对角
                 if (i == points.size() - 1 && x > mRectWidth - padding && y > mRectHeight - padding &&
-                        (firtsPo.x > mRectWidth - padding || firtsPo.y > mRectHeight - padding)) {
+                        (firstPo.x > mRectWidth - padding || firstPo.y > mRectHeight - padding)) {
                     return false;
                 }
             }
