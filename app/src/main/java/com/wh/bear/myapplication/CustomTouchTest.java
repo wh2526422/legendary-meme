@@ -1,7 +1,9 @@
 package com.wh.bear.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -21,7 +23,7 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/4/18.
  */
-public class LinearTest1 extends Activity {
+public class CustomTouchTest extends Activity {
 
     private SharedPreferences mSp;
     private int mRectWidth;
@@ -32,7 +34,7 @@ public class LinearTest1 extends Activity {
     private boolean test4;
     private boolean test5;
     private boolean test6;
-    float oldDist;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,7 @@ public class LinearTest1 extends Activity {
         List<Point> points;
         List<Line> shortLines;
         int flag;
+        float oldDist;
 
 
         public CanvasView(Context context) {
@@ -173,6 +176,19 @@ public class LinearTest1 extends Activity {
             return points;
         }
 
+        private List<Circle> readTest6Cicles() {
+            List<Circle> circles = new ArrayList<>();
+            Circle c1 = new Circle(mRectWidth / 2, mRectHeight / 2, Math.min(mRectWidth / 2, mRectHeight / 2));
+            Circle c2 = new Circle(mRectWidth / 2, mRectHeight / 2, Math.min(mRectWidth / 8, mRectHeight / 8));
+            Circle c3 = new Circle(mRectWidth / 2, mRectHeight / 2, Math.min(mRectWidth / 4, mRectHeight / 3));
+            c3.color = Color.GREEN;
+            c3.flag = 5;
+            circles.add(c1);
+            circles.add(c2);
+            circles.add(c3);
+            return circles;
+        }
+
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
@@ -207,34 +223,17 @@ public class LinearTest1 extends Activity {
                 }
 
                 drawLinesFree(canvas);
-            } else if (!test6) {
+            } else if (!test6){
                 for (int i = 0; i < circles.size(); i++) {
                     Circle circle = circles.get(i);
                     circlePaint.setColor(circle.color);
                     canvas.drawCircle(circle.cx, circle.cy, circle.radios, circlePaint);
                 }
 
+            } else {
+                drawLinesFree(canvas);
             }
 
-        }
-
-        /**
-         * 自由划线
-         *
-         * @param canvas
-         */
-        private void drawLinesFree(Canvas canvas) {
-            for (int k = 0; k < line.size() - 2; k++) {
-                canvas.drawLine(line.get(k).x, line.get(k).y, line.get(k + 1).x, line.get(k + 1).y, moveLinePaint);
-            }
-
-            for (int i = 0; i < lines.size(); i++) {
-                List<Point> points = lines.get(i);
-                for (int j = 0; j < points.size() - 1; j++) {
-                    canvas.drawLine(points.get(j).x, points.get(j).y, points.get(j + 1).x, points.get(j + 1).y, moveLinePaint);
-                }
-
-            }
         }
 
         @Override
@@ -266,7 +265,6 @@ public class LinearTest1 extends Activity {
                         if (flag == 1) {
                             float newDist = distance(event);
                             changeCircleColorAndRadios(oldDist, newDist, circles);
-
                         }
                     }
 
@@ -276,42 +274,46 @@ public class LinearTest1 extends Activity {
                     if (!test1) {
                         test1 = ifTest1Success(line);
                         if (!test1) {
-                            Toast.makeText(LinearTest1.this, "测试失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomTouchTest.this, "测试失败", Toast.LENGTH_SHORT).show();
                         } else {
                             lines.clear();
                         }
                     } else if (!test2) {
                         test2 = ifTest2Success(line);
                         if (!test2) {
-                            Toast.makeText(LinearTest1.this, "测试失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomTouchTest.this, "测试失败", Toast.LENGTH_SHORT).show();
                         } else {
                             lines.clear();
                         }
                     } else if (!test3) {
                         test3 = ifTest3Success(circles);
                         if (test3) {
-                            Toast.makeText(LinearTest1.this, "测试成功", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomTouchTest.this, "测试成功", Toast.LENGTH_SHORT).show();
                             circles.clear();
                             lines.clear();
                         }
                     } else if (!test4) {
                         test4 = ifTest4Success(line);
                         if (test4) {
-                            Toast.makeText(LinearTest1.this, "测试成功", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomTouchTest.this, "测试成功", Toast.LENGTH_SHORT).show();
                             lines.clear();
                         } else {
-                            Toast.makeText(LinearTest1.this, "测试失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomTouchTest.this, "测试失败", Toast.LENGTH_SHORT).show();
                         }
                     } else if (!test5) {
                         test5 = ifTest5Success(shortLines);
                         if (test5) {
-                            Toast.makeText(LinearTest1.this, "测试成功", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomTouchTest.this, "测试成功", Toast.LENGTH_SHORT).show();
                             lines.clear();
                             circles = readTest6Cicles();
                         }
                     } else if (!test6) {
                         flag = 0;
-
+                        test6 = ifTest6Success(circles);
+                        if (test6) {
+                            showDialog(test6);
+                            lines.clear();
+                        }
                     }
                     line = new ArrayList<>();
                     break;
@@ -320,30 +322,23 @@ public class LinearTest1 extends Activity {
             return true;
         }
 
-        private void changeCircleColorAndRadios(float oldDist, float newDist, List<Circle> circles) {
-            Circle circle = circles.get(2);
-            circle.radios = newDist / oldDist * circle.radios;
-
-            if (circle.radios >= circles.get(0).radios) {
-                circle.radios = circles.get(0).radios;
+        /**
+         * 自由划线
+         *
+         * @param canvas
+         */
+        private void drawLinesFree(Canvas canvas) {
+            for (int k = 0; k < line.size() - 2; k++) {
+                canvas.drawLine(line.get(k).x, line.get(k).y, line.get(k + 1).x, line.get(k + 1).y, moveLinePaint);
             }
 
-            if (circle.radios <= circles.get(1).radios) {
-                circle.radios = circles.get(1).radios;
+            for (int i = 0; i < lines.size(); i++) {
+                List<Point> points = lines.get(i);
+                for (int j = 0; j < points.size() - 1; j++) {
+                    canvas.drawLine(points.get(j).x, points.get(j).y, points.get(j + 1).x, points.get(j + 1).y, moveLinePaint);
+                }
+
             }
-
-        }
-
-        private List<Circle> readTest6Cicles() {
-            List<Circle> circles = new ArrayList<>();
-            Circle c1 = new Circle(mRectWidth / 2, mRectHeight / 2, Math.min(mRectWidth / 2, mRectHeight / 2));
-            Circle c2 = new Circle(mRectWidth / 2, mRectHeight / 2, Math.min(mRectWidth / 8, mRectHeight / 8));
-            Circle c3 = new Circle(mRectWidth / 2, mRectHeight / 2, Math.min(mRectWidth / 4, mRectHeight / 3));
-            c3.color = Color.GREEN;
-            circles.add(c1);
-            circles.add(c2);
-            circles.add(c3);
-            return circles;
         }
 
         /**
@@ -388,7 +383,6 @@ public class LinearTest1 extends Activity {
                     return false;
                 }
             }
-
             return true;
         }
 
@@ -452,31 +446,6 @@ public class LinearTest1 extends Activity {
                 }
             }
             return true;
-        }
-
-        /**
-         * 当圆圈被点击时改变其颜色
-         *
-         * @param downX
-         * @param downY
-         * @param circles
-         */
-        private void changeCircleColor(int downX, int downY, List<Circle> circles) {
-            for (int i = 0; i < circles.size(); i++) {
-                Circle circle = circles.get(i);
-                if ((circle.cx - downX) * (circle.cx - downX) + (circle.cy - downY) * (circle.cy - downY) < circle.radios * circle.radios) {
-                    circle.color = Color.GREEN;
-                }
-            }
-        }
-
-        private void changeLineColor(int x, int y, List<Line> lines) {
-            for (int i = 0; i < lines.size(); i++) {
-                Line line = lines.get(i);
-                if (x > line.startx - 10 && x < line.stopx + 10 && y > line.starty - 10 && y < line.stopy + 10) {
-                    line.color = Color.GREEN;
-                }
-            }
         }
 
         /**
@@ -551,6 +520,63 @@ public class LinearTest1 extends Activity {
             return true;
         }
 
+        /**
+         * 判断测试6是否成功
+         * @param circles
+         * @return
+         */
+        private boolean ifTest6Success(List<Circle> circles) {
+            for (int i = 0; i < circles.size() ; i ++) {
+                Circle circle = circles.get(i);
+                if (circle.flag < 5) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /**
+         * 当圆圈被点击时改变其颜色
+         *
+         * @param downX
+         * @param downY
+         * @param circles
+         */
+        private void changeCircleColor(int downX, int downY, List<Circle> circles) {
+            for (int i = 0; i < circles.size(); i++) {
+                Circle circle = circles.get(i);
+                if ((circle.cx - downX) * (circle.cx - downX) + (circle.cy - downY) * (circle.cy - downY) < circle.radios * circle.radios) {
+                    circle.color = Color.GREEN;
+                }
+            }
+        }
+
+        private void changeLineColor(int x, int y, List<Line> lines) {
+            for (int i = 0; i < lines.size(); i++) {
+                Line line = lines.get(i);
+                if (x > line.startx - 10 && x < line.stopx + 10 && y > line.starty - 10 && y < line.stopy + 10) {
+                    line.color = Color.GREEN;
+                }
+            }
+        }
+
+        private void changeCircleColorAndRadios(float oldDist, float newDist, List<Circle> circles) {
+            Circle circle = circles.get(2);
+            circle.radios = newDist / oldDist * circle.radios;
+
+            if (circle.radios >= circles.get(0).radios) {
+                circle.radios = circles.get(0).radios;
+                circles.get(0).flag += 1;
+            }
+
+            if (circle.radios <= circles.get(1).radios) {
+                circle.radios = circles.get(1).radios;
+                circles.get(1).flag += 1;
+            }
+
+        }
+
         private float distance(MotionEvent event) {
             float x = 0;
             float y = 0;
@@ -564,12 +590,12 @@ public class LinearTest1 extends Activity {
 
     }
 
-
     class Circle {
         int cx;
         int cy;
         float radios;
         int color = Color.RED;
+        int flag = 0;
 
         public Circle(int cx, int cy, float radios) {
             this.cx = cx;
@@ -591,5 +617,13 @@ public class LinearTest1 extends Activity {
             this.stopx = stopx;
             this.stopy = stopy;
         }
+    }
+    private void showDialog(boolean success){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("信息提示");
+        builder.setMessage(success ? "测试成功" : "测试失败");
+        builder.setPositiveButton(android.R.string.ok, null);
+        builder.setNegativeButton(android.R.string.cancel,null);
+        builder.create().show();
     }
 }
