@@ -96,13 +96,6 @@ public class TouchScrenTest extends Activity {
                     canvas.drawLine(line.get(k).x, line.get(k).y, line.get(k + 1).x, line.get(k + 1).y, moveLinePaint);
                 }
 
-                for (int i = 0; i < lines.size(); i++) {
-                    List<Point> points = lines.get(i);
-                    for (int j = 0; j < points.size() - 1; j++) {
-                        canvas.drawLine(points.get(j).x, points.get(j).y, points.get(j + 1).x, points.get(j + 1).y, moveLinePaint);
-                    }
-
-                }
             } else if (!test2) {
                 canvas.drawLine(0, mRectHeight - padding, mRectWidth - padding, 0, mLinePaint);
                 canvas.drawLine(padding, mRectHeight, mRectWidth, padding, mLinePaint);
