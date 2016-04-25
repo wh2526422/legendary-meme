@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="success">成功</string>
+    <string name="failed">失败</string>
+    <string name="test_success">测试成功</string>
+    <string name="test_failed">测试失败</string>
+    <string name="message_tip">信息提示</string>
+    <string name="test_over">测试结束</string>
+    <string name="touch_test">触屏测试</string>
+    <string name="tp_type">TP类型:</string>
+    <string name="capacitive_touch">电容屏</string>
+    <string name="line_test">线性测试:</string>
+    <string name="accuracy_test">精度测试:</string>
+    <string name="sensitivity_test">灵敏度测试:</string>
+    <string name="blind_zone_test">盲区测试:</string>
+    <string name="scaling_test">缩放测试:</string>
+    <string name="free_test">自由测试:</string>
+    <string name="passed" >通过</string>
+    <string name="unpassed">未通过</string>
+    <string name="try_again">再试一次</string>
+    <string name="skip">跳过</string>
+</resources>

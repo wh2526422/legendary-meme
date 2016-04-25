@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,9 +16,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,12 +32,17 @@ public class CustomTouchTest extends Activity {
     private int mRectWidth;
     private int mRectHeight;
     private boolean test1;
+    private boolean skiptest1;
     private boolean test2;
+    private boolean skiptest2;
     private boolean test3;
+    private boolean skiptest3;
     private boolean test4;
+    private boolean skiptest4;
     private boolean test5;
+    private boolean skiptest5;
     private boolean test6;
-
+    private boolean skiptest6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,30 +200,30 @@ public class CustomTouchTest extends Activity {
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
-            if (!test1) {
+            if (!test1 && !skiptest1) {
                 canvas.drawLine(0, padding, mRectWidth - padding, mRectHeight, mLinePaint);
                 canvas.drawLine(padding, 0, mRectWidth, mRectHeight - padding, mLinePaint);
 
                 drawLinesFree(canvas);
-            } else if (!test2) {
+            } else if (!test2 && !skiptest2) {
                 canvas.drawLine(0, mRectHeight - padding, mRectWidth - padding, 0, mLinePaint);
                 canvas.drawLine(padding, mRectHeight, mRectWidth, padding, mLinePaint);
 
                 drawLinesFree(canvas);
-            } else if (!test3) {
+            } else if (!test3 && !skiptest3) {
 
                 for (int i = 0; i < circles.size(); i++) {
                     Circle circle = circles.get(i);
                     circlePaint.setColor(circle.color);
                     canvas.drawCircle(circle.cx, circle.cy, circle.radios, circlePaint);
                 }
-            } else if (!test4) {
+            } else if (!test4 && !skiptest4) {
                 for (int i = 0; i < points.size() - 1; i++) {
                     canvas.drawLine(points.get(i).x, points.get(i).y, points.get(i + 1).x, points.get(i + 1).y, mLinePaint);
                 }
 
                 drawLinesFree(canvas);
-            } else if (!test5) {
+            } else if (!test5 && !skiptest5) {
                 for (int i = 0; i < shortLines.size(); i++) {
                     Line line = shortLines.get(i);
                     mLinePaint.setColor(line.color);
@@ -223,7 +231,7 @@ public class CustomTouchTest extends Activity {
                 }
 
                 drawLinesFree(canvas);
-            } else if (!test6){
+            } else if (!test6 && !skiptest6){
                 for (int i = 0; i < circles.size(); i++) {
                     Circle circle = circles.get(i);
                     circlePaint.setColor(circle.color);
@@ -247,7 +255,7 @@ public class CustomTouchTest extends Activity {
                 case MotionEvent.ACTION_DOWN:
                     downX = (int) event.getX();
                     downY = (int) event.getY();
-                    if (test2 && !test3) {
+                    if ((test2 || skiptest2) && !test3) {
                         changeCircleColor(downX, downY, circles);
                     }
                     break;
@@ -259,9 +267,9 @@ public class CustomTouchTest extends Activity {
                     break;
                 case MotionEvent.ACTION_MOVE:
                     line.add(new Point(x, y));
-                    if (test4 && !test5) {
+                    if ((test4 || skiptest4) && !test5) {
                         changeLineColor(x, y, shortLines);
-                    } else if (test5 & !test6) {
+                    } else if ((test5 || skiptest5) && !test6) {
                         if (flag == 1) {
                             float newDist = distance(event);
                             changeCircleColorAndRadios(oldDist, newDist, circles);
@@ -271,49 +279,52 @@ public class CustomTouchTest extends Activity {
                     break;
                 case MotionEvent.ACTION_UP:
                     lines.add(line);
-                    if (!test1) {
+                    if (!test1 && !skiptest1) {
                         test1 = ifTest1Success(line);
                         if (!test1) {
-                            Toast.makeText(CustomTouchTest.this, "测试失败", Toast.LENGTH_SHORT).show();
+                            showDialog(1);
                         } else {
                             lines.clear();
                         }
-                    } else if (!test2) {
+                    } else if (!test2 && !skiptest2) {
                         test2 = ifTest2Success(line);
                         if (!test2) {
-                            Toast.makeText(CustomTouchTest.this, "测试失败", Toast.LENGTH_SHORT).show();
+                            showDialog(2);
                         } else {
                             lines.clear();
                         }
-                    } else if (!test3) {
+                    } else if (!test3 && !skiptest3) {
                         test3 = ifTest3Success(circles);
                         if (test3) {
-                            Toast.makeText(CustomTouchTest.this, "测试成功", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomTouchTest.this, R.string.test_success, Toast.LENGTH_SHORT).show();
                             circles.clear();
                             lines.clear();
                         }
-                    } else if (!test4) {
+                    } else if (!test4 && !skiptest4) {
                         test4 = ifTest4Success(line);
                         if (test4) {
-                            Toast.makeText(CustomTouchTest.this, "测试成功", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomTouchTest.this, R.string.test_success, Toast.LENGTH_SHORT).show();
                             lines.clear();
                         } else {
-                            Toast.makeText(CustomTouchTest.this, "测试失败", Toast.LENGTH_SHORT).show();
+                            showDialog(4);
                         }
-                    } else if (!test5) {
+                    } else if (!test5 && !skiptest5) {
                         test5 = ifTest5Success(shortLines);
                         if (test5) {
-                            Toast.makeText(CustomTouchTest.this, "测试成功", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomTouchTest.this, R.string.test_success, Toast.LENGTH_SHORT).show();
                             lines.clear();
                             circles = readTest6Cicles();
                         }
-                    } else if (!test6) {
+                    } else if (!test6 && !skiptest6) {
                         flag = 0;
+                        addCircleFlag(circles);
                         test6 = ifTest6Success(circles);
                         if (test6) {
-                            showDialog(test6);
+                            Toast.makeText(CustomTouchTest.this, R.string.test_success, Toast.LENGTH_SHORT).show();
                             lines.clear();
                         }
+                    } else {
+                        testOver(lines);
                     }
                     line = new ArrayList<>();
                     break;
@@ -321,6 +332,19 @@ public class CustomTouchTest extends Activity {
             invalidate();
             return true;
         }
+
+        private void addCircleFlag(List<Circle> circles){
+            Circle circle = circles.get(2);
+
+            if (circle.radios == circles.get(0).radios) {
+                circles.get(0).flag += 1;
+            }
+
+            if (circle.radios == circles.get(1).radios) {
+                circles.get(1).flag += 1;
+            }
+        }
+
 
         /**
          * 自由划线
@@ -536,6 +560,18 @@ public class CustomTouchTest extends Activity {
             return true;
         }
 
+        private boolean testOver(List<List<Point>> lines) {
+            if (lines.size() >= 10) {
+                Intent intent = new Intent("com.mediatek.factorymode.touchscreen.TouchTestResult");
+                intent.putStringArrayListExtra("result",fillResult());
+                startActivity(intent);
+                finish();
+                return true;
+            }
+
+            return false;
+        }
+
         /**
          * 当圆圈被点击时改变其颜色
          *
@@ -588,6 +624,56 @@ public class CustomTouchTest extends Activity {
             return (float) Math.sqrt(x * x + y * y);
         }
 
+        private void showDialog(final int whichTest){
+            AlertDialog.Builder builder = new AlertDialog.Builder(CustomTouchTest.this);
+            builder.setTitle(R.string.message_tip);
+            builder.setMessage(R.string.test_failed);
+            builder.setPositiveButton(R.string.skip, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    skipTest(which, whichTest);
+                }
+            });
+            builder.setNegativeButton(R.string.try_again, null);
+            builder.create().show();
+        }
+
+        private void skipTest(int which, int whichTest) {
+            switch (whichTest) {
+                case 1:
+                    if (which == -1) {
+                        skiptest1 = true;
+                    }
+                    break;
+                case 2:
+                    if (which == -1) {
+                        skiptest2 = true;
+                    }
+                    break;
+                case 3:
+                    if (which == -1) {
+                        skiptest3 = true;
+                    }
+                    break;
+                case 4:
+                    if (which == -1) {
+                        skiptest4 = true;
+                    }
+                    break;
+                case 5:
+                    if (which == -1) {
+                        skiptest5 = true;
+                    }
+                    break;
+                case 6:
+                    if (which == -1) {
+                        skiptest6 = true;
+                    }
+                    break;
+            }
+            invalidate();
+        }
+
     }
 
     class Circle {
@@ -618,12 +704,26 @@ public class CustomTouchTest extends Activity {
             this.stopy = stopy;
         }
     }
-    private void showDialog(boolean success){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("信息提示");
-        builder.setMessage(success ? "测试成功" : "测试失败");
-        builder.setPositiveButton(android.R.string.ok, null);
-        builder.setNegativeButton(android.R.string.cancel,null);
-        builder.create().show();
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intent = new Intent("com.mediatek.factorymode.touchscreen.TouchTestResult");
+        intent.putStringArrayListExtra("result",fillResult());
+        startActivity(intent);
+    }
+
+    private ArrayList<String> fillResult() {
+        ArrayList<String> result = new ArrayList<>();
+        String passed = getResources().getString(R.string.passed);
+        String unpassed = getResources().getString(R.string.unpassed);
+        result.add(test1 ? passed : unpassed);
+        result.add(test2 ? passed : unpassed);
+        result.add(test3 ? passed : unpassed);
+        result.add(test4 ? passed : unpassed);
+        result.add(test5 ? passed : unpassed);
+        result.add(test6 ? passed : unpassed);
+        return result;
     }
 }

@@ -15,6 +15,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".TouchTestResult"
+            android:screenOrientation="portrait"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="com.mediatek.factorymode.touchscreen.TouchTestResult"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
